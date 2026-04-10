@@ -8,22 +8,13 @@
 ## 🔗 Important Links
 
 | Resource | URL |
-|----------|-----|
-| 🌐 **Live API (Base URL)** | `https://your-backend-url.onrender.com/api` |
+|----------|----|
+| 🌐 **Live API (Base URL)** | `https://cinebook-backend-production.up.railway.app/api/` |
 | 🗄️ **Frontend Repo** | [cinebook-frontend](https://github.com/NaveenParamasivam/cinebook-frontend) |
-| 🌍 **Frontend Live** | `https://your-frontend-url.vercel.app` |
+| 🌍 **Frontend Live** | `https://cinebookfe.netlify.app/` |
 | 📋 **Test Report** | [View on GitHub Pages](https://naveenparamasivam.github.io/cinebook-backend/) |
 
----
 
-## 📸 Demo Screenshots
-
-### API Health Check
-> _Add a screenshot of `GET /api/movies` returning data_
-
-<!-- ![API Response](docs/screenshots/api-health.png) -->
-
----
 
 ## 🏗️ Tech Stack
 
@@ -74,7 +65,7 @@ cinebook-backend/
 
 ## 🔌 API Endpoints
 
-> **Base URL:** `https://your-backend-url.onrender.com/api`  
+> **Base URL:** `https://cinebook-backend-production.up.railway.app/api/`  
 > 🔓 = Public &nbsp;&nbsp; 🔑 = Requires JWT &nbsp;&nbsp; 🛡️ = Admin only
 
 ### Auth — `/auth`
@@ -147,7 +138,7 @@ mvn test
 ```
 
 ### Test Report (GitHub Pages)
-> 📊 [**View Full HTML Test Report →**](https://naveenparamasivam.github.io/cinebook-backend/)
+> 📊 [**View Full HTML Test Report**](https://naveenparamasivam.github.io/cinebook-backend/)
 
 <!-- Add a screenshot of the test report below -->
 <!-- ![Test Report](docs/screenshots/test-report.png) -->
