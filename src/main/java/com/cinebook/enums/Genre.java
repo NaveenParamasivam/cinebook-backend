@@ -1,0 +1,7 @@
+package com.cinebook.enums;
+
+public enum Genre {
+    ACTION, ADVENTURE, ANIMATION, COMEDY, CRIME,
+    DOCUMENTARY, DRAMA, FANTASY, HORROR, MYSTERY,
+    ROMANCE, SCI_FI, THRILLER, WAR, WESTERN
+}

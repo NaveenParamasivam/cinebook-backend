@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineBook Backend — Test Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+          --bg: #0a0d14;
+          --surface: #111623;
+          --surface2: #161d2e;
+          --border: #1e2a42;
+          --accent: #00e5a0;
+          --accent2: #00b8ff;
+          --accent3: #7c5cfc;
+          --pass: #00e5a0;
+          --fail: #ff4d6d;
+          --warn: #ffa940;
+          --text: #e2e8f8;
+          --muted: #5a6a8a;
+          --mono: 'Space Mono', monospace;
+          --sans: 'DM Sans', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+          background: var(--bg);
+          color: var(--text);
+          font-family: var(--sans);
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
+
+        /* ─── BACKGROUND GRID ─── */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+          background-size: 40px 40px;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+          position: relative;
+          z-index: 1;
+          padding: 60px 40px 50px;
+          border-bottom: 1px solid var(--border);
+          overflow: hidden;
+        }
+
+        .hero::after {
+          content: '';
+          position: absolute;
+          top: -120px;
+          right: -80px;
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .hero-label {
+          font-family: var(--mono);
+          font-size: 11px;
+          letter-spacing: 3px;
+          color: var(--accent);
+          text-transform: uppercase;
+          margin-bottom: 16px;
+        }
+
+        .hero h1 {
+          font-family: var(--sans);
+          font-size: clamp(2rem, 5vw, 3.5rem);
+          font-weight: 700;
+          line-height: 1.1;
+          letter-spacing: -1px;
+          color: #fff;
+          margin-bottom: 8px;
+        }
+
+        .hero h1 span {
+          color: var(--accent);
+        }
+
+        .hero-sub {
+          font-size: 15px;
+          color: var(--muted);
+          font-weight: 300;
+          margin-bottom: 40px;
+        }
+
+        /* ─── STAT CARDS ─── */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 16px;
+          max-width: 900px;
+        }
+
+        .stat-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 20px 24px;
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--accent);
+        }
+
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+        }
+
+        .stat-card.green::before  { background: var(--pass); }
+        .stat-card.blue::before   { background: var(--accent2); }
+        .stat-card.purple::before { background: var(--accent3); }
+        .stat-card.orange::before { background: var(--warn); }
+
+        .stat-number {
+          font-family: var(--mono);
+          font-size: 2.4rem;
+          font-weight: 700;
+          line-height: 1;
+          margin-bottom: 6px;
+        }
+        .stat-card.green  .stat-number { color: var(--pass); }
+        .stat-card.blue   .stat-number { color: var(--accent2); }
+        .stat-card.purple .stat-number { color: var(--accent3); }
+        .stat-card.orange .stat-number { color: var(--warn); }
+
+        .stat-label {
+          font-size: 12px;
+          color: var(--muted);
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          font-weight: 500;
+        }
+
+        /* ─── MAIN LAYOUT ─── */
+        .main {
+          position: relative;
+          z-index: 1;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 48px 40px;
+        }
+
+        /* ─── PROGRESS BAR ─── */
+        .progress-wrap {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 28px 32px;
+          margin-bottom: 40px;
+        }
+
+        .progress-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 14px;
+        }
+
+        .progress-title {
+          font-size: 13px;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          font-weight: 500;
+        }
+
+        .progress-pct {
+          font-family: var(--mono);
+          font-size: 20px;
+          color: var(--pass);
+          font-weight: 700;
+        }
+
+        .progress-bar-bg {
+          height: 8px;
+          background: var(--border);
+          border-radius: 99px;
+          overflow: hidden;
+        }
+
+        .progress-bar-fill {
+          height: 100%;
+          width: 0;
+          background: linear-gradient(90deg, var(--accent), var(--accent2));
+          border-radius: 99px;
+          transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ─── SECTION ─── */
+        .section {
+          margin-bottom: 48px;
+          animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.15s; }
+
+        .section-header {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 20px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .section-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+
+        .icon-blue   { background: rgba(0,184,255,0.12); }
+        .icon-purple { background: rgba(124,92,252,0.12); }
+
+        .section-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.3px;
+        }
+
+        .section-meta {
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .badge {
+          font-family: var(--mono);
+          font-size: 11px;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-weight: 700;
+        }
+
+        .badge-pass   { background: rgba(0,229,160,0.12); color: var(--pass); border: 1px solid rgba(0,229,160,0.25); }
+        .badge-time   { background: rgba(0,184,255,0.1);  color: var(--accent2); border: 1px solid rgba(0,184,255,0.2); }
+
+        /* ─── SUITE ─── */
+        .suite {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          margin-bottom: 12px;
+          overflow: hidden;
+          transition: border-color 0.2s;
+        }
+
+        .suite:hover { border-color: rgba(0,229,160,0.25); }
+
+        .suite-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px 20px;
+          cursor: pointer;
+          user-select: none;
+          background: var(--surface2);
+          border-bottom: 1px solid transparent;
+          transition: background 0.15s;
+        }
+
+        .suite.open .suite-header { border-bottom-color: var(--border); }
+
+        .suite-header:hover { background: #1a2338; }
+
+        .suite-toggle {
+          font-family: var(--mono);
+          font-size: 10px;
+          color: var(--muted);
+          width: 16px;
+          text-align: center;
+          transition: transform 0.25s;
+        }
+
+        .suite.open .suite-toggle { transform: rotate(90deg); }
+
+        .suite-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text);
+          flex: 1;
+        }
+
+        .suite-count {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--muted);
+        }
+
+        .suite-time {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--accent2);
+        }
+
+        .suite-body {
+          display: none;
+          padding: 8px 0;
+        }
+
+        .suite.open .suite-body { display: block; }
+
+        /* ─── TEST ROW ─── */
+        .test-row {
+          display: grid;
+          grid-template-columns: 28px 1fr auto auto;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 20px;
+          border-bottom: 1px solid rgba(30,42,66,0.5);
+          transition: background 0.15s;
+        }
+
+        .test-row:last-child { border-bottom: none; }
+        .test-row:hover { background: rgba(0,229,160,0.03); }
+
+        .test-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--pass);
+          box-shadow: 0 0 6px rgba(0,229,160,0.5);
+          justify-self: center;
+        }
+
+        .test-dot.fail {
+          background: var(--fail);
+          box-shadow: 0 0 6px rgba(255,77,109,0.5);
+        }
+
+        .test-name {
+          font-size: 13.5px;
+          color: var(--text);
+          font-weight: 300;
+          line-height: 1.4;
+        }
+
+        .test-status {
+          font-family: var(--mono);
+          font-size: 10px;
+          font-weight: 700;
+          color: var(--pass);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .test-time {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--muted);
+          text-align: right;
+          white-space: nowrap;
+        }
+
+        /* ─── CHART ─── */
+        .chart-section {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin-bottom: 40px;
+        }
+
+        @media (max-width: 700px) { .chart-section { grid-template-columns: 1fr; } }
+
+        .chart-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 24px;
+        }
+
+        .chart-title {
+          font-size: 12px;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          margin-bottom: 20px;
+          font-weight: 500;
+        }
+
+        .bar-chart { display: flex; flex-direction: column; gap: 14px; }
+
+        .bar-row { display: flex; align-items: center; gap: 12px; }
+
+        .bar-label {
+          font-size: 12px;
+          color: var(--text);
+          width: 140px;
+          flex-shrink: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .bar-track {
+          flex: 1;
+          height: 6px;
+          background: var(--border);
+          border-radius: 99px;
+          overflow: hidden;
+        }
+
+        .bar-fill {
+          height: 100%;
+          border-radius: 99px;
+          background: linear-gradient(90deg, var(--accent), var(--accent2));
+          width: 0;
+          transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .bar-val {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--muted);
+          width: 44px;
+          text-align: right;
+        }
+
+        /* Donut */
+        .donut-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 32px;
+          flex-wrap: wrap;
+        }
+
+        .donut-svg { width: 130px; height: 130px; }
+
+        .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+
+        .legend-dot {
+          width: 10px; height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .legend-label { color: var(--text); }
+        .legend-count { font-family: var(--mono); color: var(--muted); font-size: 12px; }
+
+        /* ─── FOOTER ─── */
+        footer {
+          position: relative;
+          z-index: 1;
+          text-align: center;
+          padding: 32px;
+          border-top: 1px solid var(--border);
+          font-size: 12px;
+          color: var(--muted);
+          font-family: var(--mono);
+        }
+
+        footer span { color: var(--pass); }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 600px) {
+          .hero { padding: 36px 20px 36px; }
+          .main { padding: 32px 20px; }
+          .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-label">📽 CineBook — Backend · Unit Tests</div>
+    <h1>Test Results<br/><span>All Passing</span></h1>
+    <p class="hero-sub">Spring Boot 3.2.5 · JUnit 5 · Mockito · IntelliJ IDEA 2025.3</p>
+
+    <div class="stats-grid">
+        <div class="stat-card green">
+            <div class="stat-number">18</div>
+            <div class="stat-label">Total Tests</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-number">18</div>
+            <div class="stat-label">Passed</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Failed</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-number">4.39s</div>
+            <div class="stat-label">Total Time</div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+        <div class="progress-header">
+            <span class="progress-title">Pass Rate</span>
+            <span class="progress-pct">100%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" data-width="100"></div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-section">
+
+        <!-- BAR CHART: time by module -->
+        <div class="chart-card">
+            <div class="chart-title">⏱ Time by Service (ms)</div>
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <span class="bar-label">SeatService Tests</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="94"></div></div>
+                    <span class="bar-val">4120 ms</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">MovieService Tests</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="26"></div></div>
+                    <span class="bar-val">270 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONUT: pass/fail -->
+        <div class="chart-card">
+            <div class="chart-title">📊 Test Distribution</div>
+            <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="#1e2a42" stroke-width="5"/>
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="#00e5a0"
+                            stroke-width="5" stroke-dasharray="100 0" stroke-dashoffset="25"
+                            stroke-linecap="round"/>
+                    <text x="21" y="24" text-anchor="middle" font-size="8" fill="#fff" font-family="Space Mono" font-weight="700">100%</text>
+                </svg>
+                <div class="donut-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--pass)"></div>
+                        <span class="legend-label">Passed</span>
+                        <span class="legend-count">18</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--fail)"></div>
+                        <span class="legend-label">Failed</span>
+                        <span class="legend-count">0</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:var(--warn)"></div>
+                        <span class="legend-label">Skipped</span>
+                        <span class="legend-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─── SEAT SERVICE SECTION ─── -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon icon-blue">💺</div>
+            <span class="section-title">SeatService Tests</span>
+            <div class="section-meta">
+                <span class="badge badge-pass">8 passed</span>
+                <span class="badge badge-time">4.12 s</span>
+            </div>
+        </div>
+
+        <!-- suite: Release Seats -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Release Seats</span>
+                <span class="suite-count">1 test</span>
+                <span class="suite-time">3.96 s</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should release seats back to AVAILABLE</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">3960 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Get Seats By Show -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Get Seats By Show</span>
+                <span class="suite-count">2 tests</span>
+                <span class="suite-time">59 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should map expired LOCKED seat as AVAILABLE in response</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">13 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return all seats for a show sorted by row and number</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">46 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Lock Seats -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Lock Seats</span>
+                <span class="suite-count">5 tests</span>
+                <span class="suite-time">106 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should throw when seat count mismatch</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">20 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should throw BadRequestException when seat is actively LOCKED by another user</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">15 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should lock available seats successfully</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">50 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should throw BadRequestException when seat is already BOOKED</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">11 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should re-lock seat whose lock has already expired</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">10 ms</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MOVIE SERVICE SECTION ─── -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon icon-purple">🎬</div>
+            <span class="section-title">MovieService Tests</span>
+            <div class="section-meta">
+                <span class="badge badge-pass">10 passed</span>
+                <span class="badge badge-time">270 ms</span>
+            </div>
+        </div>
+
+        <!-- suite: Search Movies -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Search Movies</span>
+                <span class="suite-count">2 tests</span>
+                <span class="suite-time">162 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return empty list when no matches</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">154 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return matching movies for query</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">8 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Delete Movie -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Delete Movie (Soft Delete)</span>
+                <span class="suite-count">1 test</span>
+                <span class="suite-time">24 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should soft-delete movie by setting active = false</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">24 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Update Movie -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Update Movie</span>
+                <span class="suite-count">2 tests</span>
+                <span class="suite-time">40 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should throw when updating non-existent movie</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">16 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should update movie fields correctly</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">24 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Create Movie -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Create Movie</span>
+                <span class="suite-count">1 test</span>
+                <span class="suite-time">7 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should create movie and return response</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">7 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Get Movie By ID -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Get Movie By ID</span>
+                <span class="suite-count">2 tests</span>
+                <span class="suite-time">21 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should throw ResourceNotFoundException when movie not found</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">11 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return movie when found</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">10 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- suite: Get All Active Movies -->
+        <div class="suite open">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <span class="suite-toggle">▶</span>
+                <span class="suite-name">Get All Active Movies</span>
+                <span class="suite-count">2 tests</span>
+                <span class="suite-time">16 ms</span>
+            </div>
+            <div class="suite-body">
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return empty list when no movies exist</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">7 ms</span>
+                </div>
+                <div class="test-row">
+                    <div class="test-dot"></div>
+                    <span class="test-name">Should return all active movies</span>
+                    <span class="test-status">passed</span>
+                    <span class="test-time">9 ms</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- end MovieService section -->
+
+</div><!-- end .main -->
+
+<footer>
+    Generated by <span>cinebook-backend</span> · Spring Boot 3.2.5 · JUnit 5 · Process exited with code <span>0</span>
+</footer>
+
+<script>
+    function toggleSuite(header) {
+      header.closest('.suite').classList.toggle('open');
+    }
+
+    // Animate bars on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.bar-fill[data-width]').forEach(el => {
+          el.style.width = el.dataset.width + '%';
+        });
+        document.querySelectorAll('.progress-bar-fill[data-width]').forEach(el => {
+          el.style.width = el.dataset.width + '%';
+        });
+      }, 150);
+    });
+</script>
+</body>
+</html>
