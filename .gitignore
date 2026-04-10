@@ -1,5 +1,6 @@
 .env
 target/
+scripts/
 *.class
 *.jar
 *.war

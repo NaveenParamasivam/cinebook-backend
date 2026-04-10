@@ -1,860 +1,870 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CineBook Backend — Test Results</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet" />
-    <style>
-        :root {
-          --bg: #0a0d14;
-          --surface: #111623;
-          --surface2: #161d2e;
-          --border: #1e2a42;
-          --accent: #00e5a0;
-          --accent2: #00b8ff;
-          --accent3: #7c5cfc;
-          --pass: #00e5a0;
-          --fail: #ff4d6d;
-          --warn: #ffa940;
-          --text: #e2e8f8;
-          --muted: #5a6a8a;
-          --mono: 'Space Mono', monospace;
-          --sans: 'DM Sans', sans-serif;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-          background: var(--bg);
-          color: var(--text);
-          font-family: var(--sans);
-          min-height: 100vh;
-          overflow-x: hidden;
-        }
-
-        /* ─── BACKGROUND GRID ─── */
-        body::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background-image:
-            linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
-          background-size: 40px 40px;
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        /* ─── HERO ─── */
-        .hero {
-          position: relative;
-          z-index: 1;
-          padding: 60px 40px 50px;
-          border-bottom: 1px solid var(--border);
-          overflow: hidden;
-        }
-
-        .hero::after {
-          content: '';
-          position: absolute;
-          top: -120px;
-          right: -80px;
-          width: 500px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
-          pointer-events: none;
-        }
-
-        .hero-label {
-          font-family: var(--mono);
-          font-size: 11px;
-          letter-spacing: 3px;
-          color: var(--accent);
-          text-transform: uppercase;
-          margin-bottom: 16px;
-        }
-
-        .hero h1 {
-          font-family: var(--sans);
-          font-size: clamp(2rem, 5vw, 3.5rem);
-          font-weight: 700;
-          line-height: 1.1;
-          letter-spacing: -1px;
-          color: #fff;
-          margin-bottom: 8px;
-        }
-
-        .hero h1 span {
-          color: var(--accent);
-        }
-
-        .hero-sub {
-          font-size: 15px;
-          color: var(--muted);
-          font-weight: 300;
-          margin-bottom: 40px;
-        }
-
-        /* ─── STAT CARDS ─── */
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-          gap: 16px;
-          max-width: 900px;
-        }
-
-        .stat-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 20px 24px;
-          position: relative;
-          overflow: hidden;
-          transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-2px);
-          border-color: var(--accent);
-        }
-
-        .stat-card::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 2px;
-        }
-
-        .stat-card.green::before  { background: var(--pass); }
-        .stat-card.blue::before   { background: var(--accent2); }
-        .stat-card.purple::before { background: var(--accent3); }
-        .stat-card.orange::before { background: var(--warn); }
-
-        .stat-number {
-          font-family: var(--mono);
-          font-size: 2.4rem;
-          font-weight: 700;
-          line-height: 1;
-          margin-bottom: 6px;
-        }
-        .stat-card.green  .stat-number { color: var(--pass); }
-        .stat-card.blue   .stat-number { color: var(--accent2); }
-        .stat-card.purple .stat-number { color: var(--accent3); }
-        .stat-card.orange .stat-number { color: var(--warn); }
-
-        .stat-label {
-          font-size: 12px;
-          color: var(--muted);
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          font-weight: 500;
-        }
-
-        /* ─── MAIN LAYOUT ─── */
-        .main {
-          position: relative;
-          z-index: 1;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 48px 40px;
-        }
-
-        /* ─── PROGRESS BAR ─── */
-        .progress-wrap {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 28px 32px;
-          margin-bottom: 40px;
-        }
-
-        .progress-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 14px;
-        }
-
-        .progress-title {
-          font-size: 13px;
-          color: var(--muted);
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          font-weight: 500;
-        }
-
-        .progress-pct {
-          font-family: var(--mono);
-          font-size: 20px;
-          color: var(--pass);
-          font-weight: 700;
-        }
-
-        .progress-bar-bg {
-          height: 8px;
-          background: var(--border);
-          border-radius: 99px;
-          overflow: hidden;
-        }
-
-        .progress-bar-fill {
-          height: 100%;
-          width: 0;
-          background: linear-gradient(90deg, var(--accent), var(--accent2));
-          border-radius: 99px;
-          transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* ─── SECTION ─── */
-        .section {
-          margin-bottom: 48px;
-          animation: fadeUp 0.5s ease both;
-        }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .section:nth-child(1) { animation-delay: 0.05s; }
-        .section:nth-child(2) { animation-delay: 0.15s; }
-
-        .section-header {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-bottom: 20px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid var(--border);
-        }
-
-        .section-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
-          flex-shrink: 0;
-        }
-
-        .icon-blue   { background: rgba(0,184,255,0.12); }
-        .icon-purple { background: rgba(124,92,252,0.12); }
-
-        .section-title {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #fff;
-          letter-spacing: -0.3px;
-        }
-
-        .section-meta {
-          margin-left: auto;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .badge {
-          font-family: var(--mono);
-          font-size: 11px;
-          padding: 4px 10px;
-          border-radius: 6px;
-          font-weight: 700;
-        }
-
-        .badge-pass   { background: rgba(0,229,160,0.12); color: var(--pass); border: 1px solid rgba(0,229,160,0.25); }
-        .badge-time   { background: rgba(0,184,255,0.1);  color: var(--accent2); border: 1px solid rgba(0,184,255,0.2); }
-
-        /* ─── SUITE ─── */
-        .suite {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          margin-bottom: 12px;
-          overflow: hidden;
-          transition: border-color 0.2s;
-        }
-
-        .suite:hover { border-color: rgba(0,229,160,0.25); }
-
-        .suite-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 16px 20px;
-          cursor: pointer;
-          user-select: none;
-          background: var(--surface2);
-          border-bottom: 1px solid transparent;
-          transition: background 0.15s;
-        }
-
-        .suite.open .suite-header { border-bottom-color: var(--border); }
-
-        .suite-header:hover { background: #1a2338; }
-
-        .suite-toggle {
-          font-family: var(--mono);
-          font-size: 10px;
-          color: var(--muted);
-          width: 16px;
-          text-align: center;
-          transition: transform 0.25s;
-        }
-
-        .suite.open .suite-toggle { transform: rotate(90deg); }
-
-        .suite-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text);
-          flex: 1;
-        }
-
-        .suite-count {
-          font-family: var(--mono);
-          font-size: 11px;
-          color: var(--muted);
-        }
-
-        .suite-time {
-          font-family: var(--mono);
-          font-size: 11px;
-          color: var(--accent2);
-        }
-
-        .suite-body {
-          display: none;
-          padding: 8px 0;
-        }
-
-        .suite.open .suite-body { display: block; }
-
-        /* ─── TEST ROW ─── */
-        .test-row {
-          display: grid;
-          grid-template-columns: 28px 1fr auto auto;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 20px;
-          border-bottom: 1px solid rgba(30,42,66,0.5);
-          transition: background 0.15s;
-        }
-
-        .test-row:last-child { border-bottom: none; }
-        .test-row:hover { background: rgba(0,229,160,0.03); }
-
-        .test-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: var(--pass);
-          box-shadow: 0 0 6px rgba(0,229,160,0.5);
-          justify-self: center;
-        }
-
-        .test-dot.fail {
-          background: var(--fail);
-          box-shadow: 0 0 6px rgba(255,77,109,0.5);
-        }
-
-        .test-name {
-          font-size: 13.5px;
-          color: var(--text);
-          font-weight: 300;
-          line-height: 1.4;
-        }
-
-        .test-status {
-          font-family: var(--mono);
-          font-size: 10px;
-          font-weight: 700;
-          color: var(--pass);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .test-time {
-          font-family: var(--mono);
-          font-size: 11px;
-          color: var(--muted);
-          text-align: right;
-          white-space: nowrap;
-        }
-
-        /* ─── CHART ─── */
-        .chart-section {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-          margin-bottom: 40px;
-        }
-
-        @media (max-width: 700px) { .chart-section { grid-template-columns: 1fr; } }
-
-        .chart-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 24px;
-        }
-
-        .chart-title {
-          font-size: 12px;
-          color: var(--muted);
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          margin-bottom: 20px;
-          font-weight: 500;
-        }
-
-        .bar-chart { display: flex; flex-direction: column; gap: 14px; }
-
-        .bar-row { display: flex; align-items: center; gap: 12px; }
-
-        .bar-label {
-          font-size: 12px;
-          color: var(--text);
-          width: 140px;
-          flex-shrink: 0;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .bar-track {
-          flex: 1;
-          height: 6px;
-          background: var(--border);
-          border-radius: 99px;
-          overflow: hidden;
-        }
-
-        .bar-fill {
-          height: 100%;
-          border-radius: 99px;
-          background: linear-gradient(90deg, var(--accent), var(--accent2));
-          width: 0;
-          transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        .bar-val {
-          font-family: var(--mono);
-          font-size: 11px;
-          color: var(--muted);
-          width: 44px;
-          text-align: right;
-        }
-
-        /* Donut */
-        .donut-wrap {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 32px;
-          flex-wrap: wrap;
-        }
-
-        .donut-svg { width: 130px; height: 130px; }
-
-        .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-
-        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-
-        .legend-dot {
-          width: 10px; height: 10px;
-          border-radius: 50%;
-          flex-shrink: 0;
-        }
-
-        .legend-label { color: var(--text); }
-        .legend-count { font-family: var(--mono); color: var(--muted); font-size: 12px; }
-
-        /* ─── FOOTER ─── */
-        footer {
-          position: relative;
-          z-index: 1;
-          text-align: center;
-          padding: 32px;
-          border-top: 1px solid var(--border);
-          font-size: 12px;
-          color: var(--muted);
-          font-family: var(--mono);
-        }
-
-        footer span { color: var(--pass); }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 600px) {
-          .hero { padding: 36px 20px 36px; }
-          .main { padding: 32px 20px; }
-          .stats-grid { grid-template-columns: 1fr 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineBook — Test Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #f5c518;
+      --gold-dim: #c9a020;
+      --red: #e74c3c;
+      --green: #27ae60;
+      --green-bright: #2ecc71;
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --border: rgba(245,197,24,0.12);
+      --text: #e8e8f0;
+      --muted: #7878a0;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Film grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Hero Header ── */
+    .hero {
+      position: relative;
+      padding: 64px 48px 48px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 90% 50%, rgba(245,197,24,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 20%, rgba(231,76,60,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .film-strip {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--gold) 0px, var(--gold) 18px,
+        transparent 18px, transparent 30px
+      );
+      opacity: 0.5;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .project-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--gold);
+    }
+
+    h1.title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 8vw, 96px);
+      letter-spacing: 0.04em;
+      line-height: 0.92;
+      color: var(--white);
+      text-shadow: 0 0 60px rgba(245,197,24,0.2);
+    }
+
+    h1.title span { color: var(--gold); }
+
+    .hero-meta {
+      text-align: right;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(39,174,96,0.12);
+      border: 1px solid rgba(39,174,96,0.4);
+      color: var(--green-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .status-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green-bright);
+      box-shadow: 0 0 8px var(--green-bright);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero-timestamp {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Stats Row ── */
+    .stats-section {
+      padding: 40px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(245,197,24,0.3);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stat-card.total::before { background: var(--gold); }
+    .stat-card.passed::before { background: var(--green); }
+    .stat-card.duration::before { background: #3498db; }
+    .stat-card.suites::before { background: #9b59b6; }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      line-height: 1;
+      letter-spacing: 0.03em;
+    }
+
+    .stat-card.total .stat-value { color: var(--gold); }
+    .stat-card.passed .stat-value { color: var(--green-bright); }
+    .stat-card.duration .stat-value { color: #5dade2; }
+    .stat-card.suites .stat-value { color: #a569bd; }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Pass rate bar ── */
+    .pass-rate-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .pass-rate-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+    }
+
+    .pass-rate-card { position: relative; overflow: hidden; }
+
+    .pass-rate-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pass-rate-pct {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      line-height: 1;
+      color: var(--green-bright);
+      letter-spacing: 0.03em;
+    }
+
+    .progress-bar-wrap {
+      margin-top: 14px;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--green), var(--green-bright));
+      animation: fillBar 1.4s cubic-bezier(0.23,1,0.32,1) forwards;
+      transform-origin: left;
+    }
+
+    @keyframes fillBar {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    /* ── Main content ── */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 48px 80px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Suite Cards ── */
+    .suite-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .suite-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .suite-card:hover { border-color: rgba(245,197,24,0.25); }
+
+    .suite-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .suite-header:hover { background: rgba(255,255,255,0.02); }
+
+    .suite-icon {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .suite-icon.green {
+      background: rgba(39,174,96,0.12);
+      border: 1px solid rgba(39,174,96,0.25);
+    }
+
+    .suite-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .suite-name .sub-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .suite-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .badge-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .badge-count.green {
+      background: rgba(39,174,96,0.12);
+      color: var(--green-bright);
+      border: 1px solid rgba(39,174,96,0.25);
+    }
+
+    .time-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .chevron {
+      color: var(--muted);
+      font-size: 14px;
+      transition: transform 0.2s;
+    }
+
+    .suite-card.open .chevron { transform: rotate(180deg); }
+
+    /* ── Test list ── */
+    .test-list {
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .suite-card.open .test-list { display: block; }
+
+    .test-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 20px 12px 36px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.12s;
+    }
+
+    .test-item:last-child { border-bottom: none; }
+    .test-item:hover { background: rgba(255,255,255,0.02); }
+
+    .test-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green-bright);
+      box-shadow: 0 0 6px rgba(46,204,113,0.5);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .test-name {
+      flex: 1;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .test-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    /* ── Nested suite ── */
+    .nested-suite {
+      border-top: 1px solid var(--border);
+    }
+
+    .nested-suite-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px 10px 36px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.01);
+      transition: background 0.12s;
+    }
+
+    .nested-suite-header:hover { background: rgba(255,255,255,0.03); }
+
+    .nested-chevron {
+      color: var(--muted);
+      font-size: 11px;
+      transition: transform 0.2s;
+    }
+
+    .nested-suite.open .nested-chevron { transform: rotate(90deg); }
+
+    .nested-suite-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #b0b0d0;
+      flex: 1;
+    }
+
+    .nested-test-list { display: none; }
+    .nested-suite.open .nested-test-list { display: block; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+    }
+
+    .footer-brand span { color: var(--muted); font-size: 12px; font-family: 'DM Sans', sans-serif; display: block; letter-spacing: 0; }
+
+    .footer-info {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .suite-card { animation: fadeUp 0.4s ease both; }
+    .suite-card:nth-child(1)  { animation-delay: 0.05s; }
+    .suite-card:nth-child(2)  { animation-delay: 0.10s; }
+    .suite-card:nth-child(3)  { animation-delay: 0.15s; }
+    .suite-card:nth-child(4)  { animation-delay: 0.20s; }
+    .suite-card:nth-child(5)  { animation-delay: 0.25s; }
+    .suite-card:nth-child(6)  { animation-delay: 0.30s; }
+    .suite-card:nth-child(7)  { animation-delay: 0.35s; }
+    .suite-card:nth-child(8)  { animation-delay: 0.40s; }
+    .suite-card:nth-child(9)  { animation-delay: 0.45s; }
+    .suite-card:nth-child(10) { animation-delay: 0.50s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero, .stats-section, footer { padding-left: 20px; padding-right: 20px; }
+      .main { padding: 32px 20px 60px; }
+      .hero-inner { flex-direction: column; align-items: flex-start; }
+      .hero-meta { text-align: left; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- HERO -->
+<!-- Hero -->
 <div class="hero">
-    <div class="hero-label">📽 CineBook — Backend · Unit Tests</div>
-    <h1>Test Results<br/><span>All Passing</span></h1>
-    <p class="hero-sub">Spring Boot 3.2.5 · JUnit 5 · Mockito · IntelliJ IDEA 2025.3</p>
-
-    <div class="stats-grid">
-        <div class="stat-card green">
-            <div class="stat-number">18</div>
-            <div class="stat-label">Total Tests</div>
-        </div>
-        <div class="stat-card green">
-            <div class="stat-number">18</div>
-            <div class="stat-label">Passed</div>
-        </div>
-        <div class="stat-card blue">
-            <div class="stat-number">0</div>
-            <div class="stat-label">Failed</div>
-        </div>
-        <div class="stat-card orange">
-            <div class="stat-number">4.39s</div>
-            <div class="stat-label">Total Time</div>
-        </div>
+  <div class="film-strip"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-inner fade-in">
+    <div>
+      <div class="project-tag">cinebook-backend · Spring Boot · JUnit 5</div>
+      <h1 class="title">CINE<span>BOOK</span><br>TEST RESULTS</h1>
     </div>
+    <div class="hero-meta">
+      <div class="status-badge">ALL TESTS PASSED</div>
+      <div class="hero-timestamp">Generated by IntelliJ IDEA · 10 Apr 2026, 4:34 PM</div>
+    </div>
+  </div>
 </div>
 
-<!-- MAIN -->
+<!-- Stats -->
+<div class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-card total fade-in" style="animation-delay:0.1s">
+      <div class="stat-label">Total Tests</div>
+      <div class="stat-value">40</div>
+      <div class="stat-sub">Across all suites</div>
+    </div>
+    <div class="stat-card passed fade-in" style="animation-delay:0.15s">
+      <div class="stat-label">Passed</div>
+      <div class="stat-value">40</div>
+      <div class="stat-sub">Zero failures</div>
+    </div>
+    <div class="stat-card duration fade-in" style="animation-delay:0.2s">
+      <div class="stat-label">Duration</div>
+      <div class="stat-value">3.07<span style="font-size:28px">s</span></div>
+      <div class="stat-sub">Total run time</div>
+    </div>
+    <div class="stat-card suites fade-in" style="animation-delay:0.25s">
+      <div class="stat-label">Test Suites</div>
+      <div class="stat-value">10</div>
+      <div class="stat-sub">Classes tested</div>
+    </div>
+    <div class="pass-rate-card fade-in" style="animation-delay:0.3s">
+      <div>
+        <div class="pass-rate-label">Pass Rate</div>
+        <div class="pass-rate-pct">100%</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Test Suites -->
 <div class="main">
+  <div class="section-title">Test Suites</div>
+  <div class="suite-grid" id="suiteGrid">
 
-    <!-- PROGRESS -->
-    <div class="progress-wrap">
-        <div class="progress-header">
-            <span class="progress-title">Pass Rate</span>
-            <span class="progress-pct">100%</span>
+    <!-- 1. MovieControllerTest -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🎬</div>
+        <div class="suite-name">
+          MovieControllerTest
+          <span class="sub-label">Controller · @WebMvcTest</span>
         </div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" data-width="100"></div>
+        <div class="suite-meta">
+          <span class="badge-count green">7 tests</span>
+          <span class="time-chip">360 ms</span>
+          <span class="chevron">▾</span>
         </div>
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">POST /movies requires ADMIN role</div><div class="test-time">23 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">GET /movies/{id} maps ResourceNotFoundException to 404 ApiResponse</div><div class="test-time">39 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">GET /movies returns ApiResponse with movie list</div><div class="test-time">23 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">PUT /movies/{id} returns updated payload</div><div class="test-time">157 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">POST /movies validates request body and returns 400 with field errors</div><div class="test-time">28 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">POST /movies returns 201 with created payload</div><div class="test-time">17 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">DELETE /movies/{id} returns success message</div><div class="test-time">16 ms</div></div>
+      </div>
     </div>
 
-    <!-- CHARTS -->
-    <div class="chart-section">
-
-        <!-- BAR CHART: time by module -->
-        <div class="chart-card">
-            <div class="chart-title">⏱ Time by Service (ms)</div>
-            <div class="bar-chart">
-                <div class="bar-row">
-                    <span class="bar-label">SeatService Tests</span>
-                    <div class="bar-track"><div class="bar-fill" data-width="94"></div></div>
-                    <span class="bar-val">4120 ms</span>
-                </div>
-                <div class="bar-row">
-                    <span class="bar-label">MovieService Tests</span>
-                    <div class="bar-track"><div class="bar-fill" data-width="26"></div></div>
-                    <span class="bar-val">270 ms</span>
-                </div>
-            </div>
+    <!-- 2. BookingService Tests -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🎟️</div>
+        <div class="suite-name">
+          BookingService Tests
+          <span class="sub-label">Service Layer · Unit Tests</span>
         </div>
-
-        <!-- DONUT: pass/fail -->
-        <div class="chart-card">
-            <div class="chart-title">📊 Test Distribution</div>
-            <div class="donut-wrap">
-                <svg class="donut-svg" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="#1e2a42" stroke-width="5"/>
-                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="#00e5a0"
-                            stroke-width="5" stroke-dasharray="100 0" stroke-dashoffset="25"
-                            stroke-linecap="round"/>
-                    <text x="21" y="24" text-anchor="middle" font-size="8" fill="#fff" font-family="Space Mono" font-weight="700">100%</text>
-                </svg>
-                <div class="donut-legend">
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:var(--pass)"></div>
-                        <span class="legend-label">Passed</span>
-                        <span class="legend-count">18</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:var(--fail)"></div>
-                        <span class="legend-label">Failed</span>
-                        <span class="legend-count">0</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:var(--warn)"></div>
-                        <span class="legend-label">Skipped</span>
-                        <span class="legend-count">0</span>
-                    </div>
-                </div>
-            </div>
+        <div class="suite-meta">
+          <span class="badge-count green">4 tests</span>
+          <span class="time-chip">802 ms</span>
+          <span class="chevron">▾</span>
         </div>
-
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">initiateBooking locks seats, creates pending booking, and creates Razorpay order</div><div class="test-time">759 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">initiateBooking throws when user not found</div><div class="test-time">7 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">verifyPaymentAndConfirm marks FAILED when signature is invalid</div><div class="test-time">24 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">verifyPaymentAndConfirm rejects access if booking doesn't belong to user</div><div class="test-time">12 ms</div></div>
+      </div>
     </div>
 
-    <!-- ─── SEAT SERVICE SECTION ─── -->
-    <div class="section">
-        <div class="section-header">
-            <div class="section-icon icon-blue">💺</div>
-            <span class="section-title">SeatService Tests</span>
-            <div class="section-meta">
-                <span class="badge badge-pass">8 passed</span>
-                <span class="badge badge-time">4.12 s</span>
-            </div>
+    <!-- 3. BookingCancelWorkflowIT -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🔄</div>
+        <div class="suite-name">
+          BookingCancelWorkflowIT
+          <span class="sub-label">Integration Test · Full Stack</span>
         </div>
-
-        <!-- suite: Release Seats -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Release Seats</span>
-                <span class="suite-count">1 test</span>
-                <span class="suite-time">3.96 s</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should release seats back to AVAILABLE</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">3960 ms</span>
-                </div>
-            </div>
+        <div class="suite-meta">
+          <span class="badge-count green">1 test</span>
+          <span class="time-chip">129 ms</span>
+          <span class="chevron">▾</span>
         </div>
-
-        <!-- suite: Get Seats By Show -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Get Seats By Show</span>
-                <span class="suite-count">2 tests</span>
-                <span class="suite-time">59 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should map expired LOCKED seat as AVAILABLE in response</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">13 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return all seats for a show sorted by row and number</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">46 ms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- suite: Lock Seats -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Lock Seats</span>
-                <span class="suite-count">5 tests</span>
-                <span class="suite-time">106 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should throw when seat count mismatch</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">20 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should throw BadRequestException when seat is actively LOCKED by another user</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">15 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should lock available seats successfully</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">50 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should throw BadRequestException when seat is already BOOKED</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">11 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should re-lock seat whose lock has already expired</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">10 ms</span>
-                </div>
-            </div>
-        </div>
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">Cancel booking workflow: API → service → DB releases seats and marks booking cancelled</div><div class="test-time">129 ms</div></div>
+      </div>
     </div>
 
-    <!-- ─── MOVIE SERVICE SECTION ─── -->
-    <div class="section">
-        <div class="section-header">
-            <div class="section-icon icon-purple">🎬</div>
-            <span class="section-title">MovieService Tests</span>
-            <div class="section-meta">
-                <span class="badge badge-pass">10 passed</span>
-                <span class="badge badge-time">270 ms</span>
-            </div>
+    <!-- 4. SeatLockWorkflowIT -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🔒</div>
+        <div class="suite-name">
+          SeatLockWorkflowIT
+          <span class="sub-label">Integration Test · Full Stack</span>
         </div>
-
-        <!-- suite: Search Movies -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Search Movies</span>
-                <span class="suite-count">2 tests</span>
-                <span class="suite-time">162 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return empty list when no matches</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">154 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return matching movies for query</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">8 ms</span>
-                </div>
-            </div>
+        <div class="suite-meta">
+          <span class="badge-count green">1 test</span>
+          <span class="time-chip">44 ms</span>
+          <span class="chevron">▾</span>
         </div>
-
-        <!-- suite: Delete Movie -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Delete Movie (Soft Delete)</span>
-                <span class="suite-count">1 test</span>
-                <span class="suite-time">24 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should soft-delete movie by setting active = false</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">24 ms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- suite: Update Movie -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Update Movie</span>
-                <span class="suite-count">2 tests</span>
-                <span class="suite-time">40 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should throw when updating non-existent movie</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">16 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should update movie fields correctly</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">24 ms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- suite: Create Movie -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Create Movie</span>
-                <span class="suite-count">1 test</span>
-                <span class="suite-time">7 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should create movie and return response</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">7 ms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- suite: Get Movie By ID -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Get Movie By ID</span>
-                <span class="suite-count">2 tests</span>
-                <span class="suite-time">21 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should throw ResourceNotFoundException when movie not found</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">11 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return movie when found</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">10 ms</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- suite: Get All Active Movies -->
-        <div class="suite open">
-            <div class="suite-header" onclick="toggleSuite(this)">
-                <span class="suite-toggle">▶</span>
-                <span class="suite-name">Get All Active Movies</span>
-                <span class="suite-count">2 tests</span>
-                <span class="suite-time">16 ms</span>
-            </div>
-            <div class="suite-body">
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return empty list when no movies exist</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">7 ms</span>
-                </div>
-                <div class="test-row">
-                    <div class="test-dot"></div>
-                    <span class="test-name">Should return all active movies</span>
-                    <span class="test-status">passed</span>
-                    <span class="test-time">9 ms</span>
-                </div>
-            </div>
-        </div>
-
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">Seat locking workflow: API → service → DB persists LOCKED status</div><div class="test-time">44 ms</div></div>
+      </div>
     </div>
-    <!-- end MovieService section -->
 
-</div><!-- end .main -->
+    <!-- 5. ShowSeatRepositoryTest -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🪑</div>
+        <div class="suite-name">
+          ShowSeatRepositoryTest
+          <span class="sub-label">Repository · @DataJpaTest</span>
+        </div>
+        <div class="suite-meta">
+          <span class="badge-count green">1 test</span>
+          <span class="time-chip">25 ms</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">releaseExpiredLocks sets LOCKED seats back to AVAILABLE when expired</div><div class="test-time">25 ms</div></div>
+      </div>
+    </div>
+
+    <!-- 6. AuthControllerTest -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🔐</div>
+        <div class="suite-name">
+          AuthControllerTest
+          <span class="sub-label">Controller · Authentication</span>
+        </div>
+        <div class="suite-meta">
+          <span class="badge-count green">2 tests</span>
+          <span class="time-chip">147 ms</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="test-list">
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">POST /auth/register validates input and returns 400</div><div class="test-time">57 ms</div></div>
+        <div class="test-item"><div class="test-dot"></div><div class="test-name">POST /auth/login returns token response</div><div class="test-time">90 ms</div></div>
+      </div>
+    </div>
+
+    <!-- 7. MovieService Tests (nested) -->
+    <div class="suite-card">
+      <div class="suite-header" onclick="toggleSuite(this)">
+        <div class="suite-icon green">🎞️</div>
+        <div class="suite-name">
+          MovieService Tests
+          <span class="sub-label">Service Layer · 6 grouped suites</span>
+        </div>
+        <div class="suite-meta">
+          <span class="badge-count green">10 tests</span>
+          <span class="time-chip">164 ms</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="test-list">
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Search Movies</span>
+            <span class="time-chip">120 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should return empty list when no matches</div><div class="test-time">116 ms</div></div>
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should return matching movies for query</div><div class="test-time">4 ms</div></div>
+          </div>
+        </div>
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Delete Movie (Soft Delete)</span>
+            <span class="time-chip">7 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should soft-delete movie by setting active = false</div><div class="test-time">7 ms</div></div>
+          </div>
+        </div>
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Update Movie</span>
+            <span class="time-chip">12 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should throw when updating non-existent movie</div><div class="test-time">5 ms</div></div>
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should update movie fields correctly</div><div class="test-time">7 ms</div></div>
+          </div>
+        </div>
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Create Movie</span>
+            <span class="time-chip">5 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should create movie and return response</div><div class="test-time">5 ms</div></div>
+          </div>
+        </div>
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Get Movie By ID</span>
+            <span class="time-chip">14 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should throw ResourceNotFoundException when movie not found</div><div class="test-time">7 ms</div></div>
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should return movie when found</div><div class="test-time">7 ms</div></div>
+          </div>
+        </div>
+
+        <div class="nested-suite">
+          <div class="nested-suite-header" onclick="toggleNested(this)">
+            <span class="nested-chevron">▶</span>
+            <span class="nested-suite-name">Get All Active Movies</span>
+            <span class="time-chip">6 ms</span>
+          </div>
+          <div class="nested-test-list">
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should return empty list when no movies exist</div><div class="test-time">4 ms</div></div>
+            <div class="test-item" style="padding-left:56px"><div class="test-dot"></div><div class="test-name">Should return all active movies</div><div class="test-time">2 ms</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /suite-grid -->
+</div><!-- /main -->
 
 <footer>
-    Generated by <span>cinebook-backend</span> · Spring Boot 3.2.5 · JUnit 5 · Process exited with code <span>0</span>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      CineBook
+      <span>Backend Test Suite — cinebook-backend</span>
+    </div>
+    <div class="footer-info">
+      Generated by IntelliJ IDEA 2025.3.1<br>
+      Java 21 · Spring Boot 3.2.5 · JUnit 5.10.2<br>
+      10 Apr 2026, 16:34 IST
+    </div>
+  </div>
 </footer>
 
 <script>
-    function toggleSuite(header) {
-      header.closest('.suite').classList.toggle('open');
-    }
+  function toggleSuite(header) {
+    const card = header.closest('.suite-card');
+    card.classList.toggle('open');
+  }
 
-    // Animate bars on load
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.querySelectorAll('.bar-fill[data-width]').forEach(el => {
-          el.style.width = el.dataset.width + '%';
-        });
-        document.querySelectorAll('.progress-bar-fill[data-width]').forEach(el => {
-          el.style.width = el.dataset.width + '%';
-        });
-      }, 150);
-    });
+  function toggleNested(header) {
+    const suite = header.closest('.nested-suite');
+    suite.classList.toggle('open');
+  }
+
+  // Auto-expand all suites on load for evaluators
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.suite-card').forEach(card => card.classList.add('open'));
+    document.querySelectorAll('.nested-suite').forEach(ns => ns.classList.add('open'));
+  });
 </script>
 </body>
 </html>
